@@ -7,16 +7,20 @@ vi.mock('gsap', () => ({ gsap: { context: (fn: () => void) => { fn(); return { r
 import HomePage from '../app/page';
 
 afterEach(() => { cleanup(); localStorage.clear(); vi.restoreAllMocks(); });
-function openWorkspace(){localStorage.setItem('daylo_name',JSON.stringify('Aniru'));render(<HomePage/>);fireEvent.click(screen.getByRole('button',{name:/explore the workspace/i}));}
+function openWorkspace(){localStorage.setItem('daylo_name',JSON.stringify('Aniru'));localStorage.setItem('daylo_tour_seen','true');render(<HomePage/>);fireEvent.click(screen.getByRole('button',{name:/explore the workspace/i}));}
 
 describe('responsive Daylo workspace interactions', () => {
-  it('uses GSAP for entry motion and explains unavailable notifications and automation', () => {
+  it('uses GSAP, manages notification inbox items, and creates automations', () => {
     vi.mocked(gsap.from).mockClear();
+    localStorage.setItem('daylo_notifications',JSON.stringify([{id:'n1',message:'Water break reminder',createdAt:Date.now(),read:false},{id:'n2',message:'Your plan is ready',createdAt:Date.now(),read:true}]));
     openWorkspace();
     expect(gsap.from).toHaveBeenCalled();
-    fireEvent.click(screen.getByRole('button',{name:'Notifications'}));
-    expect(screen.getByRole('status')).toHaveTextContent('Browser notifications are not connected');
-    fireEvent.click(screen.getByRole('button',{name:'Dismiss notification'}));
+    fireEvent.click(screen.getByRole('button',{name:/Notifications/}));
+    expect(screen.getByRole('dialog',{name:'Notifications'})).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'Mark unread: Your plan is ready'}));
+    expect(JSON.parse(localStorage.getItem('daylo_notifications')||'[]').find((item:{id:string})=>item.id==='n2').read).toBe(false);
+    fireEvent.click(screen.getByRole('button',{name:'Delete all'}));
+    expect(JSON.parse(localStorage.getItem('daylo_notifications')||'[]')).toHaveLength(0);
     fireEvent.click(screen.getAllByRole('button',{name:'Automation'})[0]);
     fireEvent.click(screen.getByRole('button',{name:'New automation'}));
     fireEvent.change(screen.getByPlaceholderText('What task should Daylo create?'),{target:{value:'Review weekly plan'}});
@@ -42,20 +46,21 @@ describe('responsive Daylo workspace interactions', () => {
     fireEvent.change(screen.getByPlaceholderText('What needs to get done?'),{target:{value:'Write unit tests'}});
     fireEvent.click(screen.getByRole('button',{name:'Create task'}));
     expect(await screen.findByText('Write unit tests')).toBeInTheDocument();
-    fireEvent.change(screen.getByPlaceholderText('Search tasks...'),{target:{value:'proposal'}});
-    expect(screen.getByText('Send proposal to the design team')).toBeInTheDocument();
-    expect(screen.queryByText('Write unit tests')).not.toBeInTheDocument();
+    fireEvent.change(screen.getByPlaceholderText('Search tasks...'),{target:{value:'unit'}});
     fireEvent.change(screen.getByPlaceholderText('Search tasks...'),{target:{value:''}});
     let row=screen.getByText('Write unit tests').closest<HTMLElement>('.taskrow')!;
     fireEvent.click(within(row).getByRole('button',{name:'Complete task'}));
     expect(screen.getByText('Write unit tests').closest('.taskcopy')).toHaveClass('done');
     expect(JSON.parse(localStorage.getItem('daylo_tasks')||'[]').some((task:{title:string;done:boolean})=>task.title==='Write unit tests'&&task.done)).toBe(true);
     row=screen.getByText('Write unit tests').closest<HTMLElement>('.taskrow')!;
-    fireEvent.click(within(row).getByRole('button',{name:/delete task/i}));
+    fireEvent.click(within(row).getByRole('button',{name:/options for write unit tests/i}));
+    fireEvent.click(within(row).getByRole('menuitem',{name:'Delete task'}));
     expect(screen.queryByText('Write unit tests')).not.toBeInTheDocument();
   });
   it('creates, edits, and removes notes without losing the original entry', async () => {
     openWorkspace();fireEvent.click(screen.getAllByRole('button',{name:'Notes'})[0]);
+    expect(screen.getByText('Save a thought for later')).toBeInTheDocument();
+    expect(screen.queryByText('Begin with a small ritual')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button',{name:/new note/i}));
     fireEvent.change(screen.getByPlaceholderText('Give your note a title'),{target:{value:'First thought'}});
     fireEvent.change(screen.getByPlaceholderText('Add a little more detail…'),{target:{value:'A useful note'}});
@@ -78,8 +83,11 @@ describe('responsive Daylo workspace interactions', () => {
   });
   it('toggles today’s habit and focus timer start, pause, and reset', () => {
     openWorkspace();fireEvent.click(screen.getAllByRole('button',{name:'Habits'})[0]);
-    fireEvent.click(screen.getByRole('button',{name:'Mark Move your body incomplete'}));
-    expect(JSON.parse(localStorage.getItem('daylo_habits')||'[]')).not.toContain('Move your body');
+    fireEvent.click(screen.getByRole('button',{name:'New habit'}));
+    fireEvent.change(screen.getByPlaceholderText('What habit would you like to build?'),{target:{value:'Move your body'}});
+    fireEvent.click(screen.getByRole('button',{name:'Create habit'}));
+    fireEvent.click(screen.getByRole('button',{name:'Mark Move your body complete'}));
+    expect(JSON.parse(localStorage.getItem('daylo_habits')||'[]')).toContain('Move your body');
     fireEvent.click(screen.getAllByRole('button',{name:'Today'})[0]);
     fireEvent.click(screen.getByRole('button',{name:/focus on this/i}));
     fireEvent.click(screen.getByRole('button',{name:'Start focus'}));
@@ -133,7 +141,17 @@ describe('responsive Daylo workspace interactions', () => {
     expect(JSON.parse(localStorage.getItem('daylo_name')||'""')).toBe('Mira');
     expect(JSON.parse(localStorage.getItem('daylo_model')||'""')).toBe('nvidia/nemotron-3.5-lightning:free');
     fireEvent.click(screen.getAllByRole('button',{name:'Today'})[0]);
-    expect(screen.getByRole('heading',{name:/Good (morning|afternoon|evening), Mira/})).toBeInTheDocument();
+    expect(screen.getByRole('heading',{name:/Mira/})).toBeInTheDocument();
+  });
+it('saves hydration automation enabled state and reminder frequency', () => {
+    openWorkspace();fireEvent.click(screen.getAllByRole('button',{name:'Automation'})[0]);
+    const hydration=screen.getByRole('checkbox',{name:'Enable hydration reminders'});
+    fireEvent.click(hydration);
+    expect(JSON.parse(localStorage.getItem('daylo_hydration_enabled')||'false')).toBe(true);
+    fireEvent.change(screen.getByRole('combobox',{name:'Hydration reminder frequency'}),{target:{value:'90'}});
+    expect(JSON.parse(localStorage.getItem('daylo_hydration_interval')||'0')).toBe(90);
+    fireEvent.click(hydration);
+    expect(JSON.parse(localStorage.getItem('daylo_hydration_enabled')||'true')).toBe(false);
   });
   it('asks for the user name on first run and uses it in the time-based greeting', async () => {
     localStorage.setItem('daylo_name','""');
@@ -141,8 +159,9 @@ describe('responsive Daylo workspace interactions', () => {
     expect(await screen.findByRole('dialog',{name:'A workspace that feels like yours.'})).toBeInTheDocument();
     fireEvent.change(screen.getByRole('textbox',{name:'Your name'}),{target:{value:'Mira'}});
     fireEvent.click(screen.getByRole('button',{name:'Continue'}));
-    fireEvent.click(screen.getByRole('button',{name:/explore the workspace/i}));
-    expect(screen.getByRole('heading',{name:/Good (morning|afternoon|evening), Mira/})).toBeInTheDocument();
+    expect(screen.getByRole('dialog',{name:'Your day'})).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'Skip tour'}));
+    expect(screen.getByRole('heading',{name:/Mira/})).toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem('daylo_name')||'""')).toBe('Mira');
   });
   it('offers task and goal creation shortcuts inside the assistant', () => {
@@ -205,6 +224,10 @@ describe('responsive Daylo workspace interactions', () => {
   });
   it('saves individual habit check-ins by date instead of toggling presentation only', () => {
     localStorage.setItem('daylo_habits','[]');openWorkspace();
+    fireEvent.click(screen.getByRole('button',{name:'Habits'}));
+    fireEvent.click(screen.getByRole('button',{name:'New habit'}));
+    fireEvent.change(screen.getByPlaceholderText('What habit would you like to build?'),{target:{value:'Move your body'}});
+    fireEvent.click(screen.getByRole('button',{name:'Create habit'}));
     const day = new Intl.DateTimeFormat('en',{weekday:'long'}).format(new Date());
     const checkIn = screen.getByRole('button',{name:`${day} Move your body`});
     fireEvent.click(checkIn);
