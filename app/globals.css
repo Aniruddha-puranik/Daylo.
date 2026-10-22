@@ -337,3 +337,15 @@ body{background:var(--canvas);color:var(--ink)}
 .priority p{margin:0 0 15px;line-height:1.7}
 @media(max-width:767px){.settings-grid{gap:16px}.settings-grid>.card{padding:20px;gap:15px}.settings-grid .settingfield{grid-template-columns:minmax(0,1fr);gap:9px;padding:14px 0}.settings-grid .settingfield .field{max-width:none}.meditation-sound-setting{grid-template-columns:minmax(0,1fr) auto}}
 @media(max-width:380px){.mobilebottom{justify-content:space-between;padding-inline:3px}.mobilebottom button{flex:1;min-width:0;padding-inline:1px;font-size:8px}}
+
+/* Mobile install entry point and device-specific install guidance. */
+.install-daylo{display:grid;gap:10px;justify-items:start}
+.install-daylo-compact{display:none}
+.install-daylo-button{min-height:44px;gap:9px}
+.install-daylo-status{display:flex;align-items:center;gap:8px;margin:0;color:var(--muted);font-size:13px}
+.install-daylo-help{display:grid;gap:5px;max-width:420px;padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:var(--soft);color:var(--ink);font-size:13px;line-height:1.55}
+.install-daylo-help span{color:var(--muted)}
+.install-description,.install-availability{margin:0;line-height:1.65}
+.install-settings-card{align-content:start}
+.install-availability{font-size:12px}
+@media(max-width:767px){.install-daylo-compact{display:grid}.landing .heroactions{align-items:stretch}.landing .heroactions>.install-daylo{width:100%}.landing .heroactions>.install-daylo .button{width:100%;justify-content:center}.install-settings-card{order:2}}
