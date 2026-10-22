@@ -1,6 +1,7 @@
 export type Task = { id: string; title: string; done: boolean; priority: 'High' | 'Medium' | 'Low'; due: string; list: string };
 export type Note = { id: string; title: string; body: string; tag: string; date: string; pinned: boolean };
-export type Goal = { id: string; title: string; detail: string; progress: number; date: string; priority?: 'High' | 'Medium' | 'Low' };
+export type GoalUpdate = { id: string; note: string; createdAt: number; progressChange: number };
+export type Goal = { id: string; title: string; detail: string; progress: number; date: string; priority?: 'High' | 'Medium' | 'Low'; updates?: GoalUpdate[] };
 
 export function filterTasks(tasks: Task[], query: string) {
   const q = query.trim().toLocaleLowerCase();

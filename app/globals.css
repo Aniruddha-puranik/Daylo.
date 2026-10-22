@@ -10,6 +10,8 @@
 /* Daylo visual system: quiet ivory surfaces, forest navigation, and leaf-lime cues. */
 :root{--line:#e7e9df;--canvas:#f5f3ec;--surface:#fffdf7;--ink:#17231a;--muted:#798279;--soft:#eaf2e3}
 body{background:var(--canvas);color:var(--ink)}
+body.paper-texture{background-image:linear-gradient(var(--canvas),var(--canvas)),url('/textures/paper-grain.svg');background-blend-mode:normal,multiply;background-size:auto,240px 240px}
+.darkmode body.paper-texture{background-image:linear-gradient(#121413,#121413),url('/textures/paper-grain.svg');background-blend-mode:normal,soft-light}
 .sidebar{background:#10291d;border-color:#244132;color:#f5f7ef;box-shadow:5px 0 24px #0f2b1710}
 .brand{color:#f8faf3;font-size:22px;letter-spacing:-.06em}.brandmark{background:transparent;border-radius:9px;width:31px;height:31px;overflow:hidden;display:grid;place-items:center}.brandmark svg{width:31px;height:31px}
 .sidebar .navlabel{color:#8ba392;letter-spacing:.16em;font-size:9px;padding-top:17px}
@@ -206,3 +208,102 @@ a.feature:hover .feature-link-hint,a.feature:focus-visible .feature-link-hint{op
 .tour-panel .eyebrow{font-size:10px}.tour-panel h2{font-size:22px;margin:9px 0 6px}.tour-panel p{font-size:13px;line-height:1.55}.tour-panel .tour-progress{margin:13px 0}.tour-panel .tour-actions .button{min-height:34px;padding:7px 10px;font-size:11px}
 .top-settings{display:grid;place-items:center;flex:none}
 @media(max-width:767px){.tour-panel{width:min(268px,calc(100vw - 28px));padding:11px}.tour-panel .eyebrow{font-size:9px}.tour-panel h2{font-size:18px;margin:6px 0 4px}.tour-panel p{font-size:11px;line-height:1.4}.tour-panel .tour-progress{margin:9px 0}.tour-panel .tour-actions .button{min-height:29px;padding:5px 7px;font-size:9px}.mobilebottom{grid-template-columns:repeat(5,minmax(0,1fr))}.mobilebottom button{font-size:9px}.topactions{gap:5px}.top-settings{width:34px;height:36px}}
+
+.ambient-player{display:block;width:100%;height:40px;margin-top:10px;accent-color:#78d64b}.darkmode .ambient-player{color-scheme:dark}
+
+.sprout-art{display:block;width:64px;height:64px;margin:0 auto 10px}.habit-empty{text-align:center}
+
+/* Logo surfaces match the supplied lockups so their raster edges disappear into the UI. */
+:root{--canvas:#fdf6ed}
+.sidebar,.topbar,.landing,.footer{background-color:#fdf6ed}.brand{padding-inline:8px}.darkmode{--canvas:#1d2d25;background:#1d2d25}.darkmode .sidebar,.darkmode .topbar,.darkmode .workspace,.darkmode .main,.darkmode .mobilebottom,.darkmode .assistant-fullscreen,.darkmode .assistant-modal-head,.darkmode .assistant-workarea,.darkmode .assistant-chat,.darkmode .full-chatbox{background-color:#1d2d25}.darkmode .sidebar{border-color:#2b3b31}.darkmode .assistant-identity{background-color:#1d2d25}.brandmark-img{display:block;object-fit:contain;object-position:left center;flex:none}.sidebar .brandmark-img{width:198px;height:64px}.mobilebrand .brandmark-img{width:126px;height:38px}.assistant-identity .brandmark-img{width:108px;height:40px}.landnav .brandmark-img{width:clamp(88px,18vw,198px);height:auto;max-height:64px}.footer .brandmark-img{width:98px;height:34px}.landing-cta-inner .brandmark-img{width:132px;height:40px}.meditation-card{grid-column:1/-1;display:grid;gap:18px;margin-top:20px;background:linear-gradient(135deg,var(--surface),var(--soft))}.meditation-heading{display:flex;align-items:center;gap:13px}.meditation-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;background:var(--forest);color:#c5f24e;font-size:30px}.meditation-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;max-width:620px}.meditation-controls label{display:grid;gap:7px;font-size:11px;color:var(--muted)}.meditation-session{max-width:620px}.meditation-clock{font:700 clamp(32px,5vw,44px) Manrope;color:var(--forest);font-variant-numeric:tabular-nums;letter-spacing:.04em}.meditation-progress{height:5px;border-radius:9px;background:var(--line);overflow:hidden;margin:11px 0 15px}.meditation-progress i{display:block;height:100%;background:var(--green);transition:width .25s linear}.meditation-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.meditation-audio{display:none}.darkmode .meditation-clock{color:#f4f4ed}.darkmode .meditation-card{background:linear-gradient(135deg,#202d24,#1d2d25)}@media(max-width:767px){.meditation-card{padding:17px}.meditation-controls{grid-template-columns:1fr}.meditation-actions{align-items:flex-start;flex-direction:column;gap:8px}}
+.landing-cta{background:#1d2d25}.landing-cta-inner .brandmark-img{filter:none}
+
+/* Theme and depth corrections: keep light navigation readable and lift surfaces gently. */
+.sidebar{background:#fdf6ed;color:#1d3024;border-color:#e5dfd3;box-shadow:6px 0 26px #25372812}
+.sidebar .navitem{color:#536258}
+.sidebar .navitem:hover{background:#e9efe5;color:#1d3024}
+.sidebar .navitem.active{background:#244633;color:#b7f34b}
+.sidebar .profile{border-color:#e5dfd3;color:#1d3024}
+.sidebar .profile small{color:#738074}
+.darkmode .sidebar{background:#1d2d25;color:#f5f7ef;border-color:#2b3b31}
+.darkmode .sidebar .navitem{color:#c3d0c3}
+.darkmode .sidebar .navitem:hover{background:#ffffff0c;color:white}
+.darkmode .sidebar .navitem.active{background:#254633;color:#a7f432}
+.darkmode .sidebar .profile{border-color:#ffffff1a;color:white}
+.darkmode .sidebar .profile small{color:#9fb2a2}
+.card,.automation-card,.settings-grid>.card,.meditation-card,.notification-panel,.modal,.assistant-widget.open,.tour-panel{box-shadow:0 8px 26px #1a2b1d0a,0 1px 3px #1a2b1d08}
+.card,.automation-card,.settings-grid>.card,.meditation-card{transition:box-shadow .22s ease,transform .22s ease,border-color .22s ease}
+.card:hover,.automation-card:hover,.settings-grid>.card:hover,.meditation-card:hover{box-shadow:0 14px 34px #1a2b1d12,0 3px 8px #1a2b1d08;transform:translateY(-2px);border-color:#d7dfd1}
+.darkmode .card,.darkmode .automation-card,.darkmode .settings-grid>.card,.darkmode .meditation-card{box-shadow:0 10px 30px #00000025,0 1px 3px #00000018}
+.darkmode .card:hover,.darkmode .automation-card:hover,.darkmode .settings-grid>.card:hover,.darkmode .meditation-card:hover{box-shadow:0 16px 38px #00000036;border-color:#405345}
+.tour-highlight{box-shadow:0 0 0 4px #a7f43235,0 0 26px 8px #a7f43255,0 14px 36px #08140d35;filter:none}
+.tour-dimmer{background:rgba(8,15,11,.56);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.tour-pointer{width:34px;height:38px;color:#10291d;filter:drop-shadow(0 3px 5px #08140d70)}
+.tour-pointer svg{position:relative;z-index:1;stroke-linejoin:round}
+.tour-pointer-aura{position:absolute;left:9px;top:9px;width:24px;height:24px;border:2px solid #a7f432;border-radius:50%;background:#a7f43235;box-shadow:0 0 15px #a7f432aa;animation:tourPointerPulse 1.8s ease-out infinite}
+@keyframes tourPointerPulse{0%{transform:scale(.65);opacity:.9}75%,100%{transform:scale(1.45);opacity:0}}
+@media(prefers-reduced-motion:reduce){.card,.automation-card,.settings-grid>.card,.meditation-card{transition:none}.card:hover,.automation-card:hover,.settings-grid>.card:hover,.meditation-card:hover{transform:none}.tour-pointer-aura{animation:none;opacity:.6}}
+
+/* Refined light theme: crisp surfaces, readable sage neutrals, and one forest accent. */
+:root{--canvas:#f3f6f2;--surface:#fff;--ink:#17251c;--muted:#68786d;--line:#e1e8df;--soft:#e9f1e8;--forest:#1d3c2b;--green:#73ce49;--lime:#a7f432}
+body{background:var(--canvas);color:var(--ink)}
+.shell:not(.darkmode){background:var(--canvas);color:var(--ink)}
+.shell:not(.darkmode) .workspace,.shell:not(.darkmode) .main,.shell:not(.darkmode) .mobilebottom{background:var(--canvas);color:var(--ink)}
+.shell:not(.darkmode) .sidebar{background:#fdf6ed;border-color:#e6dfd3;color:#1b3024;box-shadow:6px 0 28px #18352112}
+.shell:not(.darkmode) .sidebar .brand{border-bottom:1px solid #e8e0d5;margin:0 4px 20px;padding:2px 7px 20px}
+.shell:not(.darkmode) .sidebar .navlabel{color:#748675}
+.shell:not(.darkmode) .sidebar .navitem{color:#506256;border-radius:12px;min-height:44px}
+.shell:not(.darkmode) .sidebar .navitem:hover{background:#e9efe6;color:#1d3c2b}
+.shell:not(.darkmode) .sidebar .navitem.active{background:#1d3c2b;color:#bdF569;box-shadow:inset 3px 0 #a7f432,0 5px 14px #1d3c2b20}
+.shell:not(.darkmode) .sidebar .profile{border-color:#e6dfd3;color:#1d3024}
+.shell:not(.darkmode) .sidebar .profile small{color:#708074}
+.shell:not(.darkmode) .topbar{background:#f8faf7ed;border-color:#e4eae2;backdrop-filter:blur(14px)}
+.shell:not(.darkmode) .topbar .iconbtn{color:#43594a}
+.shell:not(.darkmode) .topbar .iconbtn:hover{background:#e7eee5;color:#1d3c2b}
+.shell:not(.darkmode) .sectiontitle,.shell:not(.darkmode) .greeting{color:#17251c}
+.shell:not(.darkmode) .subtle,.shell:not(.darkmode) .cardhint,.shell:not(.darkmode) .crumb{color:#68786d}
+.shell:not(.darkmode) .card,.shell:not(.darkmode) .automation-card,.shell:not(.darkmode) .notification-panel,.shell:not(.darkmode) .settings-grid>.card,.shell:not(.darkmode) .meditation-card{background:var(--surface);border-color:var(--line);box-shadow:0 8px 24px #1d34200b,0 1px 3px #1d342008}
+.shell:not(.darkmode) .card:hover,.shell:not(.darkmode) .automation-card:hover,.shell:not(.darkmode) .settings-grid>.card:hover,.shell:not(.darkmode) .meditation-card:hover{border-color:#cddbcf;box-shadow:0 14px 32px #1d342014,0 3px 8px #1d342008}
+.shell:not(.darkmode) .field{background:#fff;border-color:#dce5dc;color:#1d3024}
+.shell:not(.darkmode) .field:focus{border-color:#6ebd4b;box-shadow:0 0 0 3px #73ce4925;outline:0}
+.shell:not(.darkmode) .mobilebottom{border-color:#e1e8df;box-shadow:0 -8px 24px #1d34200d}
+.shell:not(.darkmode) .mobilebottom button{color:#637469}
+.shell:not(.darkmode) .mobilebottom button.active{color:#327a34}
+.shell:not(.darkmode) .button:not(.outline){box-shadow:0 5px 14px #1d3c2b20}
+.shell:not(.darkmode) .button.outline{background:#fff;border-color:#d4dfd4;color:#1d3c2b}
+@media(max-width:767px){
+  body{overflow-x:hidden}
+  .shell{min-height:100dvh}
+  .shell:not(.darkmode) .sidebar{display:none}
+  .shell:not(.darkmode) .workspace{margin-left:0;width:100%;padding-bottom:calc(74px + env(safe-area-inset-bottom))}
+  .shell:not(.darkmode) .topbar{height:62px;padding:0 14px;position:sticky;top:0;z-index:18}
+  .shell:not(.darkmode) .main{padding:22px 16px calc(28px + env(safe-area-inset-bottom));width:100%;max-width:none}
+  .shell:not(.darkmode) .mobilebottom{height:calc(64px + env(safe-area-inset-bottom));padding:6px 4px env(safe-area-inset-bottom);}
+  .shell:not(.darkmode) .mobilebottom button{min-width:48px;min-height:48px;border-radius:12px;gap:3px}
+  .shell:not(.darkmode) .greeting{font-size:clamp(25px,7vw,32px);line-height:1.14}
+  .shell:not(.darkmode) .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px 0}
+  .shell:not(.darkmode) .stats>.card{min-width:0;padding:15px 13px;border-radius:16px}
+  .shell:not(.darkmode) .layout2,.shell:not(.darkmode) .settings-grid,.shell:not(.darkmode) .automation-grid{grid-template-columns:minmax(0,1fr);gap:14px}
+  .shell:not(.darkmode) .card,.shell:not(.darkmode) .automation-card{border-radius:17px}
+  .shell:not(.darkmode) .toolbar{width:100%;gap:9px}
+  .shell:not(.darkmode) .toolbar .field{min-width:0;flex:1}
+  .shell:not(.darkmode) .button,.shell:not(.darkmode) .field{min-height:44px}
+  .shell:not(.darkmode) .card:hover,.shell:not(.darkmode) .automation-card:hover,.shell:not(.darkmode) .settings-grid>.card:hover,.shell:not(.darkmode) .meditation-card:hover{transform:none}
+}
+@media(max-width:380px){
+  .shell:not(.darkmode) .main{padding-inline:12px}
+  .shell:not(.darkmode) .topactions{gap:3px}
+  .shell:not(.darkmode) .stats>.card{padding:13px 10px}
+  .shell:not(.darkmode) .mobilebottom button{min-width:43px}
+}
+@media(prefers-reduced-motion:reduce){.shell:not(.darkmode) .card,.shell:not(.darkmode) .button{transition:none}}
+.goal-updates{display:grid;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.goal-update{padding:10px 12px;border-radius:12px;background:var(--soft);min-width:0}
+.goal-update-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--muted);font-size:11px}
+.goal-update-meta span{color:var(--forest);font-weight:700;white-space:nowrap}
+.goal-update p{margin:6px 0 0;color:var(--ink);font-size:13px;line-height:1.55;overflow-wrap:anywhere}
+.darkmode .goal-update{background:#26382c}
+.darkmode .goal-update-meta span{color:#b7ee63}
+.goalcard>.button{min-height:40px}
+@media(max-width:767px){.goalcard>.button{min-height:44px}.goal-updates{gap:8px}.goal-update{padding:11px}.automation-row{align-items:flex-start;gap:10px;flex-wrap:wrap}.automation-row>.toolbar{width:100%;justify-content:flex-start}}
+@media(max-width:767px){.toast{bottom:calc(78px + env(safe-area-inset-bottom));right:12px;max-width:calc(100vw - 24px)}}

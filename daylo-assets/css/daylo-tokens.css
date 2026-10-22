@@ -1,0 +1,126 @@
+/* Daylo design tokens + motion helpers. Import once in app/globals.css (top).
+   Fonts: load via next/font and set --font-display / --font-ui / --font-mono on <html>. */
+
+:root {
+  color-scheme: light;
+  /* surfaces */
+  --surface-0: #f9f4eb;   /* canvas, warm paper */
+  --surface-1: #fffdf8;   /* cards */
+  --surface-2: #efe8d8;   /* wells, inputs */
+  --surface-3: #e4dcc8;
+  /* ink */
+  --ink-0: #14231a;
+  --ink-1: #34473b;
+  --ink-2: #566a5d;       /* >= 4.5:1 on surface-0 */
+  --ink-3: #8a9a8f;       /* decorative only */
+  --line: #ddd4bf;
+  /* brand */
+  --forest: #1f2d26;
+  --sage: #5e6c56;
+  --sage-light: #8fa07f;
+  --gold: #e1b978;
+  --lime: #c6f24e;           /* optional: legacy done-state */
+  --accent: #e1b978;      /* gold, from the logo sun: done, active, streak */
+  --accent-ink: #1f2d26;
+  --warm: #c8683c;        /* priority, warnings */
+  --amber: #e3a857;
+  --danger: #b4412f;
+  /* radius */
+  --r-sm: 6px; --r-md: 14px; --r-lg: 22px; --r-xl: 28px; --r-pill: 999px;
+  /* shadow (green-tinted, layered) */
+  --sh-1: 0 1px 0 rgba(20,45,30,.04), 0 1px 3px rgba(20,45,30,.06);
+  --sh-2: 0 2px 4px rgba(20,45,30,.05), 0 8px 20px rgba(20,45,30,.08);
+  --sh-3: 0 4px 8px rgba(20,45,30,.06), 0 18px 44px rgba(20,45,30,.14);
+  /* motion */
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-spring: cubic-bezier(.34, 1.4, .64, 1);
+  --t-fast: 120ms; --t-base: 220ms; --t-slow: 420ms;
+  /* space (4-based) */
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 72px; --s-9: 96px;
+  /* fluid type */
+  --fs-body: 1rem;
+  --fs-lg: clamp(1.125rem, 1.05rem + .4vw, 1.3rem);
+  --fs-h3: clamp(1.35rem, 1.15rem + 1vw, 1.8rem);
+  --fs-h2: clamp(1.9rem, 1.4rem + 2.4vw, 3.2rem);
+  --fs-h1: clamp(2.5rem, 1.6rem + 4.6vw, 5.6rem);
+  /* safe areas */
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --nav-h: 64px;
+  /* paper grain (tile from /textures/paper-grain.svg) */
+  --grain: url("/textures/paper-grain.svg");
+  --grain-opacity: .05;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface-0: #1b2721;
+  --surface-1: #22302a;
+  --surface-2: #2a3a32;
+  --surface-3: #34463c;
+  --ink-0: #eef3e6;
+  --ink-1: #c9d6c3;
+  --ink-2: #9db0a2;
+  --ink-3: #6b7f72;
+  --line: #34463c;
+  --accent: #e1b978;
+  --accent-ink: #1b2721;
+  --warm: #e58a5b;
+  --sh-1: 0 1px 0 rgba(0,0,0,.3), 0 1px 3px rgba(0,0,0,.35);
+  --sh-2: 0 2px 4px rgba(0,0,0,.3), 0 8px 20px rgba(0,0,0,.4);
+  --sh-3: 0 4px 8px rgba(0,0,0,.35), 0 18px 44px rgba(0,0,0,.55);
+  --grain-opacity: .07;
+}
+
+/* grain overlay: add class "paper" to <body> */
+.paper { position: relative; background: var(--surface-0); }
+.paper::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: var(--grain); background-size: 240px 240px; opacity: var(--grain-opacity);
+  mix-blend-mode: multiply;
+}
+:root[data-theme="dark"] .paper::before { mix-blend-mode: screen; }
+
+/* touch + focus basics */
+button, a, [role="button"], input, select, textarea { touch-action: manipulation; }
+input, select, textarea { font-size: 16px; } /* stops iOS zoom */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--r-sm); }
+:root:not([data-theme="dark"]) :focus-visible { outline-color: var(--forest); }
+.tap:active { transform: scale(.97); transition: transform var(--t-fast) var(--ease-out); }
+
+/* hand-drawn stroke reveal: <svg><path class="draw" pathLength="1"/> */
+.draw { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.draw.in { stroke-dashoffset: 0; transition: stroke-dashoffset var(--t-slow) var(--ease-out); }
+
+/* task wipe strike-through */
+.strike { background: linear-gradient(currentColor, currentColor) no-repeat 0 55% / 0 2px; transition: background-size var(--t-base) var(--ease-out), opacity var(--t-base); }
+.is-done .strike { background-size: 100% 2px; opacity: .55; }
+
+/* new row highlight */
+@keyframes lime-flash { from { background-color: color-mix(in srgb, var(--accent) 55%, transparent); } to { background-color: transparent; } }
+.row-new { animation: lime-flash 900ms var(--ease-out); }
+
+/* bottom sheet */
+.sheet { position: fixed; inset: auto 0 0 0; max-height: calc(100dvh - var(--safe-t) - 24px); padding-bottom: calc(var(--s-4) + var(--safe-b)); background: var(--surface-1); border-radius: var(--r-xl) var(--r-xl) 0 0; box-shadow: var(--sh-3); overscroll-behavior: contain; transform: translateY(0); }
+.sheet[data-state="closed"] { transform: translateY(100%); }
+.sheet-handle { width: 40px; height: 4px; border-radius: 4px; background: var(--line); margin: 10px auto 6px; }
+@keyframes sheet-in { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.sheet[data-state="open"] { animation: sheet-in var(--t-slow) var(--ease-out); }
+
+/* assistant thinking: three pen dots */
+.dots span { display: inline-block; width: 6px; height: 6px; margin: 0 2px; border-radius: 50%; background: var(--ink-2); animation: dot 1s infinite ease-in-out; }
+.dots span:nth-child(2) { animation-delay: .15s; } .dots span:nth-child(3) { animation-delay: .3s; }
+@keyframes dot { 0%, 80%, 100% { transform: translateY(0); opacity: .4; } 40% { transform: translateY(-4px); opacity: 1; } }
+
+/* paper skeleton shimmer */
+.skeleton { background: linear-gradient(100deg, var(--surface-2) 30%, var(--surface-3) 50%, var(--surface-2) 70%) 0 0 / 220% 100%; border-radius: var(--r-sm); animation: shimmer 1.4s linear infinite; }
+@keyframes shimmer { to { background-position: -220% 0; } }
+
+/* imperfection helpers */
+.tilt-l { transform: rotate(-1.2deg); } .tilt-r { transform: rotate(1deg); }
+
+/* reduced motion / data: kill decorative motion, keep state changes instant */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+  .draw { stroke-dashoffset: 0; }
+}

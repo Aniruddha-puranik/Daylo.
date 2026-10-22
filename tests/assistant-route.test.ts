@@ -63,6 +63,22 @@ describe('OpenRouter assistant endpoint', () => {
     expect(routedRequest.models[0]).toBe('google/gemma-4-31b-it:free');
     expect(routedRequest.models).toContain('minimax/minimax-m3.1-flash:free');
   });
+  it('continues with the remaining free models when the first batch is rate limited', async () => {
+    process.env.OPENROUTER_API_KEY='test-only';
+    const fetchMock=vi.fn()
+      .mockResolvedValueOnce(new Response('{}',{status:429}))
+      .mockResolvedValueOnce(new Response(JSON.stringify({model:'nvidia/nemotron-3.5-super-vl:free',choices:[{message:{content:'Fallback after rate limit'}}]}),{status:200}));
+    vi.stubGlobal('fetch',fetchMock);
+    const response=await POST(request({messages:[{role:'user',content:'hello'}],model:'nvidia/nemotron-3.5-lightning:free'}));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({reply:'Fallback after rate limit',model:'nvidia/nemotron-3.5-super-vl:free'});
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    const firstBatch=JSON.parse(fetchMock.mock.calls[0][1].body).models;
+    const secondBatch=JSON.parse(fetchMock.mock.calls[1][1].body).models;
+    expect(firstBatch).toHaveLength(3);
+    expect(firstBatch[0]).toBe('nvidia/nemotron-3.5-lightning:free');
+    expect(secondBatch).toEqual(['google/gemma-4-31b-it:free','nvidia/nemotron-3.5-super-vl:free','nvidia/nemotron-3-ultra-550b-a55b:free']);
+  });
   it('retries another free model when a successful upstream response is empty', async () => {
     process.env.OPENROUTER_API_KEY='test-only';
     const fetchMock=vi.fn()

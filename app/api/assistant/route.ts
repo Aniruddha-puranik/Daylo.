@@ -27,8 +27,8 @@ export async function POST(req: NextRequest) {
     const requestedModel = typeof body.model === 'string' ? body.model : undefined;
     const model = requestedModel || process.env.OPENROUTER_MODEL || 'minimax/minimax-m3.1-flash:free';
     if (!allowed.has(model)) return NextResponse.json({ error: 'Configured model is not in Daylo’s allowed free model list.' }, { status: 400 });
-    // OpenRouter currently accepts at most three models in one fallback list.
-    const fallbackModels = [model, ...freeModelOrder.filter((candidate) => candidate !== model).slice(0, 2)];
+      // OpenRouter currently accepts at most three models in one fallback list.
+      const allFreeModels = [model, ...freeModelOrder.filter((candidate) => candidate !== model)];
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 25000);
     try {
@@ -50,15 +50,21 @@ export async function POST(req: NextRequest) {
         if (Array.isArray(content)) return content.map((part: {text?: string}|string) => typeof part === 'string' ? part : part.text || '').join('').trim();
         return '';
       };
-      let candidates = fallbackModels;
+      let candidates = allFreeModels.slice(0, 3);
+      let remainingModels = allFreeModels;
       let lastStatus = 502;
       let lastError = 'Free models are temporarily busy. Please try again shortly.';
-      // OpenRouter tries these models in order when a model/provider errors.
-      // If a model returns HTTP 200 with no text, remove that model and retry once.
-      for (let pass = 0; pass < 2 && candidates.length; pass += 1) {
+      // Try the selected model first, then continue through the remaining free pool
+      // if an entire OpenRouter batch is rate limited or returns no usable text.
+      for (let pass = 0; pass < allFreeModels.length && candidates.length; pass += 1) {
         const response = await request(candidates);
         lastStatus = response.status;
         if (!response.ok) {
+          if (response.status === 429 && remainingModels.length > candidates.length) {
+            remainingModels = remainingModels.slice(candidates.length);
+            candidates = remainingModels.slice(0, 3);
+            continue;
+          }
           lastError = response.status === 401 || response.status === 403
             ? 'OpenRouter rejected the server API key. Update OPENROUTER_API_KEY in the server environment and restart or redeploy Daylo.'
             : response.status === 400
@@ -76,7 +82,8 @@ export async function POST(req: NextRequest) {
         const reply = getReply(result);
         const actualModel = typeof result.model === 'string' && allowed.has(result.model) ? result.model : candidates[0];
         if (reply) return NextResponse.json({ reply, model: actualModel });
-        candidates = candidates.filter((candidate) => candidate !== actualModel);
+        remainingModels = remainingModels.filter((candidate) => candidate !== actualModel);
+        candidates = remainingModels.slice(0, 3);
         lastError = 'The free model pool returned an empty response. Please send your message again.';
       }
       return NextResponse.json({ error: lastError }, { status: lastStatus === 429 ? 429 : 502 });

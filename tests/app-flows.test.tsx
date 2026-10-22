@@ -101,6 +101,20 @@ describe('responsive Daylo workspace interactions', () => {
     fireEvent.click(screen.getByRole('button',{name:'Reset'}));
     expect(screen.getByText('25:00')).toBeInTheDocument();
   });
+  it('plays a selected meditation sound on a loop and can end the timed session', async () => {
+    const play=vi.spyOn(HTMLMediaElement.prototype,'play').mockResolvedValue();
+    vi.spyOn(HTMLMediaElement.prototype,'pause').mockImplementation(()=>{});
+    openWorkspace();fireEvent.click(screen.getAllByRole('button',{name:'Habits'})[0]);
+    fireEvent.change(screen.getByRole('combobox',{name:'Meditation sound'}),{target:{value:'deep-focus'}});
+    fireEvent.change(screen.getByRole('combobox',{name:'Meditation duration'}),{target:{value:'5'}});
+    expect(document.querySelector<HTMLAudioElement>('.meditation-audio')?.src).toContain('/audio/daylo-deep-focus.mp3');
+    fireEvent.click(screen.getByRole('button',{name:'Start meditation'}));
+    await waitFor(()=>expect(play).toHaveBeenCalled());
+    expect(document.querySelector<HTMLAudioElement>('.meditation-audio')?.loop).toBe(true);
+    expect(screen.getByRole('button',{name:'End session'})).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'End session'}));
+    expect(screen.getByRole('button',{name:'Start meditation'})).toBeInTheDocument();
+  });
   it('lets focus sessions use a selected duration', () => {
     openWorkspace();fireEvent.click(screen.getAllByRole('button',{name:/focus on this/i})[0]);
     fireEvent.change(screen.getByRole('combobox',{name:'Focus duration'}),{target:{value:'15'}});
@@ -109,10 +123,10 @@ describe('responsive Daylo workspace interactions', () => {
   });
   it('switches appearance and clears local demo data only after confirmation', () => {
     openWorkspace();
-    expect(document.querySelector('.sidebar .brandmark-img')).toHaveAttribute('src','/daylo-logo-dark.png');
+    expect(document.querySelector('.sidebar .brandmark-img')).toHaveAttribute('src','/daylo-logo-light.webp');
     fireEvent.click(screen.getByRole('button',{name:'Toggle appearance'}));
     expect(document.querySelector('main')).toHaveClass('darkmode');
-    expect(screen.getAllByRole('img',{name:'Daylo — Make every day count'}).some(logo=>logo.getAttribute('src')==='/daylo-logo-dark.png')).toBe(true);
+    expect(screen.getAllByRole('img',{name:'Daylo — Make every day count'}).some(logo=>logo.getAttribute('src')==='/daylo-logo-dark.webp')).toBe(true);
     localStorage.setItem('daylo_tasks','[]');vi.spyOn(window,'confirm').mockReturnValue(true);
     fireEvent.click(screen.getAllByRole('button',{name:'Settings'})[0]);
     fireEvent.click(screen.getByRole('button',{name:'Clear local data'}));
@@ -124,6 +138,26 @@ describe('responsive Daylo workspace interactions', () => {
     fireEvent.change(screen.getByPlaceholderText('Ask Daylo anything…'),{target:{value:'Help me plan'}});
     fireEvent.click(screen.getByRole('button',{name:'Send message'}));
     expect(await screen.findByText('I’m offline right now. You can still use Daylo to organize your tasks, notes, and goals.')).toBeInTheDocument();
+  });
+  it('creates a task from a direct assistant command and persists it locally', async () => {
+    openWorkspace();fireEvent.click(screen.getByRole('button',{name:'Open Daylo assistant'}));
+    const fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
+    fireEvent.change(screen.getByRole('textbox',{name:'Message Daylo'}),{target:{value:'Create a task called Submit the application'}});
+    fireEvent.click(screen.getByRole('button',{name:'Send message'}));
+    expect(await screen.findByText('Submit the application')).toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem('daylo_tasks')||'[]')).toContainEqual(expect.objectContaining({title:'Submit the application',priority:'Medium',list:'Inbox'}));
+    fireEvent.click(screen.getByRole('button',{name:'Undo'}));
+    await waitFor(()=>expect(JSON.parse(localStorage.getItem('daylo_tasks')||'[]').some((task:{title:string})=>task.title==='Submit the application')).toBe(false));
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+  it('lets explicit assistant requests create local tasks and goals without calling the AI service', async () => {
+    openWorkspace();fireEvent.click(screen.getByRole('button',{name:'Open Daylo assistant'}));
+    const fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
+    fireEvent.change(screen.getByRole('textbox',{name:'Message Daylo'}),{target:{value:'can you create me a task to learn AI'}});
+    fireEvent.click(screen.getByRole('button',{name:'Send message'}));
+    expect(await screen.findByText('learn AI')).toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem('daylo_tasks')||'[]')).toContainEqual(expect.objectContaining({title:'learn AI',priority:'Medium',list:'Inbox'}));
+    expect(fetchMock).not.toHaveBeenCalled();
   });
   it('sends the selected free model instead of silently routing to another model', async () => {
     openWorkspace();fireEvent.click(screen.getByRole('button',{name:'Open Daylo assistant'}));
