@@ -5,7 +5,7 @@ export function BrandMark({ dark = false, className = '' }: BrandMarkProps) {
   return (
     <img
       className={`brandmark-img ${className}`.trim()}
-      src={dark ? '/daylo-logo-dark-transparent.png' : '/daylo-logo-light.webp'}
+      src={dark ? '/daylo-logo-dark-transparent.png' : '/daylo-logo-light-transparent.png'}
       alt="Daylo — Make every day count"
       decoding="async"
     />
