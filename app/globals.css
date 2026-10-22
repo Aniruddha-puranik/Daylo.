@@ -307,3 +307,33 @@ body{background:var(--canvas);color:var(--ink)}
 .goalcard>.button{min-height:40px}
 @media(max-width:767px){.goalcard>.button{min-height:44px}.goal-updates{gap:8px}.goal-update{padding:11px}.automation-row{align-items:flex-start;gap:10px;flex-wrap:wrap}.automation-row>.toolbar{width:100%;justify-content:flex-start}}
 @media(max-width:767px){.toast{bottom:calc(78px + env(safe-area-inset-bottom));right:12px;max-width:calc(100vw - 24px)}}
+
+/* Keep goal logging actions distinct and the automation cards calm in both themes. */
+.goalcard>.goal-log-progress{margin-top:16px;margin-right:10px}
+.goalcard>.goal-log-update{margin-top:16px}
+.darkmode .automation-card .automation-tag{background:#293a2e;border:1px solid #3b4e3f;color:#d6e3d4}
+.darkmode .automation-card>.empty{background:#172019;border-color:#354538;color:var(--ink)}
+.darkmode .automation-card>.empty p{color:#aebdaf}
+.automation-card>.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:180px;margin:4px 0;padding:24px;border:1px dashed var(--line);border-radius:14px;background:var(--canvas);text-align:center}
+.automation-card>.empty h3,.automation-card>.empty p{margin:0}
+.automation-card>.empty p{max-width:440px}
+.automation-card>.empty .button{margin-top:4px}
+
+/* Settings: compact, balanced cards with clear label/control alignment. */
+.settings-grid{gap:24px}
+.settings-grid>.card{gap:18px;padding:clamp(22px,2.2vw,30px)}
+.settings-grid>.card>.cardtitle{margin-bottom:2px;line-height:1.3}
+.settings-grid .habitline{min-height:68px;gap:18px;padding:16px 0}
+.settings-grid .settingfield{grid-template-columns:minmax(130px,.7fr) minmax(0,1fr);gap:22px;padding:16px 0;line-height:1.5}
+.settings-grid .settingfield .field{max-width:none}
+.settings-grid>.card p{margin:0;padding-top:14px;border-top:1px solid var(--line);line-height:1.7}
+.settings-grid>.card p+p{padding-top:0;border-top:0}
+.meditation-sound-setting{grid-template-columns:minmax(0,1fr) auto;gap:14px;max-width:620px;padding:12px 0}
+.meditation-sound-setting>span{display:grid;gap:4px}
+.meditation-sound-setting .cardhint{margin:0}
+.priority{padding:clamp(24px,2.8vw,34px)}
+.priority .eyebrow{display:inline-flex;align-items:center;gap:8px;margin-bottom:3px}
+.priority h3{margin:14px 0 9px;line-height:1.25}
+.priority p{margin:0 0 15px;line-height:1.7}
+@media(max-width:767px){.settings-grid{gap:16px}.settings-grid>.card{padding:20px;gap:15px}.settings-grid .settingfield{grid-template-columns:minmax(0,1fr);gap:9px;padding:14px 0}.settings-grid .settingfield .field{max-width:none}.meditation-sound-setting{grid-template-columns:minmax(0,1fr) auto}}
+@media(max-width:380px){.mobilebottom{justify-content:space-between;padding-inline:3px}.mobilebottom button{flex:1;min-width:0;padding-inline:1px;font-size:8px}}
